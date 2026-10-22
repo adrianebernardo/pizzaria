@@ -45,8 +45,14 @@ public class TelaItens {
             final int fi = i;
 
             checks[i] = new JCheckBox(nomes[i]);
-            quantidades[i] = new JSpinner(new SpinnerNumberModel(1, 1, 50, 1));
+            quantidades[i] = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
             quantidades[i].setEnabled(false);
+
+            // Permite digitar a quantidade: o total atualiza enquanto digita
+            JFormattedTextField campoQtd =
+                    ((JSpinner.DefaultEditor) quantidades[i].getEditor()).getTextField();
+            ((javax.swing.text.NumberFormatter) campoQtd.getFormatter())
+                    .setCommitsOnValidEdit(true);
 
             checks[i].addActionListener(e -> {
                 quantidades[fi].setEnabled(checks[fi].isSelected());

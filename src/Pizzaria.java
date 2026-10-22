@@ -13,35 +13,20 @@ public class Pizzaria {
         Forno forno = new Forno();
         Caixa caixa = new Caixa();
 
-        // NOME DO CLIENTE
-        JTextField campoNome = new JTextField();
-
-        Object[] mensagemInicial = {
-            "🍕 BEM-VINDO À PIZZARIA BERNARDES XD! 🍕",
-            "Qual é o seu nome?",
-            campoNome
-        };
-
-        int opcaoNome = JOptionPane.showOptionDialog(
-                null,
-                mensagemInicial,
-                "Bem-vindo!",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                new Object[]{"Seguinte"},
-                "Seguinte"
-        );
-
-        if (opcaoNome == -1) {
+        // BOAS-VINDAS COM A LOGO
+        if (!Telaboasvindas.mostrarBoasVindas()) {
             return;
         }
 
-        String nomeCliente = campoNome.getText().trim();
+        // NOME DO CLIENTE + PARA LEVAR / COMER AQUI
+        Telaboasvindas.Dados dados = Telaboasvindas.pedirDados();
 
-        if (nomeCliente.isEmpty()) {
-            nomeCliente = "Cliente";
+        if (dados == null) {
+            return;
         }
+
+        String nomeCliente = dados.nome;
+        String modalidade = dados.textoModalidade();
 
         // JANELA INICIAL COM BOTÃO
         JFrame janela = new JFrame("Pizzaria Bernardes XD");
@@ -64,6 +49,7 @@ public class Pizzaria {
         painelInicial.add(botao, BorderLayout.SOUTH);
 
         janela.add(painelInicial);
+        janela.getRootPane().setDefaultButton(botao); // Enter aciona "Fazer pedido"
 
         CountDownLatch esperaClique = new CountDownLatch(1);
 
@@ -74,44 +60,6 @@ public class Pizzaria {
 
         janela.setVisible(true);
         esperaClique.await();
-
-        // COMER AQUI OU PARA LEVAR
-        String[] opcoes = {"Comer aqui", "Para levar"};
-
-        int escolha = JOptionPane.showOptionDialog(
-                null,
-                "Como deseja receber seu pedido?\n\n"
-                + "Comer aqui: sem frete\n"
-                + "Para levar: frete de R$ 5,00",
-                "Pizzaria Bernardes XD",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                opcoes,
-                opcoes[0]
-        );
-
-        if (escolha == -1) {
-            return;
-        }
-
-        double frete = 0.0;
-
-        if (escolha == 1) {
-            frete = 5.00;
-
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Seu pedido será para levar, "
-                    + nomeCliente + ", perfeito!"
-            );
-        } else {
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Seu pedido será servido na pizzaria, "
-                    + nomeCliente + "!"
-            );
-        }
 
         // CARDÁPIO DE PIZZAS (checkbox por sabor/tamanho, preços fixos)
         if (!TelePizzas.mostrar(catalogo, pedido, nomeCliente)) {
@@ -168,14 +116,11 @@ public class Pizzaria {
             return;
         }
 
-        double total = subtotal + frete;
+        double total = subtotal;
 
         // RESUMO DO PEDIDO
         String resumo = pedido.resumo(catalogo)
-                + "\nSubtotal dos produtos: R$ "
-                + String.format("%.2f", subtotal)
-                + "\nFrete: R$ "
-                + String.format("%.2f", frete)
+                + "\nRecebimento: " + modalidade
                 + "\n--------------------------"
                 + "\nTOTAL: R$ "
                 + String.format("%.2f", total);

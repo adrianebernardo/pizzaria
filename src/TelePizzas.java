@@ -57,9 +57,15 @@ public class TelePizzas {
                 double preco = catalogo.getPrecoPizza(i, tamanhos[j]);
 
                 checks[i][j] = new JCheckBox("R$ " + String.format("%.2f", preco));
-                quantidades[i][j] = new JSpinner(new SpinnerNumberModel(1, 1, 50, 1));
-                quantidades[i][j].setPreferredSize(new Dimension(50, 24));
+                quantidades[i][j] = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
+                quantidades[i][j].setPreferredSize(new Dimension(60, 24));
                 quantidades[i][j].setEnabled(false);
+
+                // Permite digitar a quantidade: o total atualiza enquanto digita
+                JFormattedTextField campoQtd =
+                        ((JSpinner.DefaultEditor) quantidades[i][j].getEditor()).getTextField();
+                ((javax.swing.text.NumberFormatter) campoQtd.getFormatter())
+                        .setCommitsOnValidEdit(true);
 
                 checks[i][j].addActionListener(e -> {
                     quantidades[fi][fj].setEnabled(checks[fi][fj].isSelected());

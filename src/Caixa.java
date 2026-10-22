@@ -49,17 +49,30 @@ public class Caixa {
                 }
             }
 
+            // Segunda caixa: tela de pagamento (fictícia) de cada forma escolhida
             if (metodo.equals("Dinheiro")) {
-                double recebido = pedirDinheiro(parte);
-                if (recebido < 0) {
+                Double recebido = Telametodos.pagarDinheiro(nomeCliente, parte);
+                if (recebido == null) {
                     JOptionPane.showMessageDialog(null, "Pagamento cancelado.");
                     return;
                 }
                 troco += recebido - parte;
                 recibo.append(metodo).append(": ").append(dinheiro(parte))
                         .append(" (recebido ").append(dinheiro(recebido)).append(")\n");
+            } else if (metodo.equals("Pix")) {
+                String detalhe = Telametodos.pagarPix(nomeCliente, parte);
+                if (detalhe == null) {
+                    JOptionPane.showMessageDialog(null, "Pagamento cancelado.");
+                    return;
+                }
+                recibo.append(dinheiro(parte)).append(" - ").append(detalhe).append("\n");
             } else {
-                recibo.append(metodo).append(": ").append(dinheiro(parte)).append("\n");
+                String detalhe = Telametodos.pagarCartao(metodo, nomeCliente, parte);
+                if (detalhe == null) {
+                    JOptionPane.showMessageDialog(null, "Pagamento cancelado.");
+                    return;
+                }
+                recibo.append(dinheiro(parte)).append(" - ").append(detalhe).append("\n");
             }
 
             restante = arredondar(restante - parte);
